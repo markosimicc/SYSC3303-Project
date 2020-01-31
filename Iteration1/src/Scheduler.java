@@ -1,14 +1,13 @@
-
 public class Scheduler implements Runnable {
 	private boolean empty = true;
-	private boolean reply;
-	private Struct str;
+	public boolean reply = true;
+	private s str;
 	private String getDirection(int Direction) {
 		if(Direction == 1) {
-			return "UP";
+			return "Up";
 		}
 		else {
-			return "DOWN";
+			return "Down";
 		}
 	}
 	@Override
@@ -16,7 +15,7 @@ public class Scheduler implements Runnable {
 		// TODO Auto-generated method stub
 		
 	}
-	public synchronized void put(Struct s) {
+	public synchronized void put(s s) {
 		while(!empty) {
 			try {
 				wait();
@@ -25,13 +24,20 @@ public class Scheduler implements Runnable {
 				return;
 			}
 		}
+		if(Thread.currentThread().getName().contains("Floor")) {
+			reply = false;
+		}
+		else { 
+			reply = true;
+		}
 		str = s;
-		System.out.println("Scheduler recieved message :" + Struct.time + " " + Struct.floor + getDirection(Struct.direction)+ " "+ Struct.elevator);
-		empty = true;
+		System.out.println("Scheduler recieved message :" + s.time + " " + s.floor + " " + getDirection(s.direction)+ " "+ s.elevator);
+		empty = false;
 		notifyAll();
 	}
-	public synchronized Struct get() {
-		while(empty && str != null) {
+	public synchronized s get(boolean rep) {
+		
+		while(empty || str == null || !(rep == reply)) {
 			try {
 				wait();
 			}
@@ -39,11 +45,11 @@ public class Scheduler implements Runnable {
 				return null;
 			}
 		}
-		
 		empty = true;
+		s data = str;
+		str = null;
 		notifyAll();
-		return str;
-		
+		return data;
 	}
 	
 

@@ -1,9 +1,19 @@
 
 public class ElevatorSubsystem implements Runnable{
-
-	@Override
+	private int elevatorNum;
+	private Scheduler s;
+	private s a;
+	
+	public ElevatorSubsystem(int elevatorNum, Scheduler s) {
+		this.elevatorNum = elevatorNum;
+		this.s = s;
+	}
+	
 	public void run() {
-		// TODO Auto-generated method stub
+		a = s.get(false);
+		System.out.println("Elevator Recieved: "+  a.time + " " + a.floor + " " + a.direction + " " + a.elevator);
+		s.put(a);
+		
 		
 	}
 
