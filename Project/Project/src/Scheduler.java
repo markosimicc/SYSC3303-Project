@@ -5,7 +5,7 @@
  */
 public class Scheduler implements Runnable {
 	public boolean reply = true;
-	private RequestInfo str;
+	public RequestInfo str;
 	@Override
 	public void run() {
 		// Nothing to be done in run()
@@ -41,7 +41,7 @@ public class Scheduler implements Runnable {
 	 * @param isReply
 	 * @return
 	 */
-	public synchronized RequestInfo recieveInfo(boolean isReply) {
+	public synchronized RequestInfo receiveInfo(boolean isReply) {
 		
 		while(str == null || !(isReply == reply)) {
 			try {

@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.time.*;
 
 public class FloorSubsystem implements Runnable {
-	private String[] tokens;
+	public String[] tokens;
 	private Scheduler scheduler;
 	private String direction;
 	private int elevator;
@@ -30,7 +30,7 @@ public class FloorSubsystem implements Runnable {
 	 * @return type: RequestInfo
 	 */
 	public RequestInfo readInput() {
-	File textFile = new File("C:\\Users\\mahmoudalsous\\Downloads\\SYSC3303-Project-master\\SYSC3303-Project-master\\InputFile.txt");
+		File textFile = new File("InputFile.txt");
 		Scanner scanner;
 		try {
 			scanner = new Scanner(textFile);
@@ -64,7 +64,7 @@ public class FloorSubsystem implements Runnable {
 		System.out.println("Floor requested at: " + " " + input.time + " " + input.floor + " " +input.direction + " " + input.elevator);
 		scheduler.sendInfo(input);
 
-		RequestInfo response = scheduler.recieveInfo(true);
+		RequestInfo response = scheduler.receiveInfo(true);
 		System.out.println("Elevator has arrived at floor : " + response.time + " "+ response.floor  + " "+response.direction + " "+ response.elevator);
 	}
 }
