@@ -1,6 +1,6 @@
 SYSC 3303A2 - Iteration 1
 Group: 3
-Members: Archit Bhatia (101065674), Ross Mattew (), Marko Simic (), Michael Slokar (), Mahmoud Al Sous ()
+Members: Archit Bhatia (101065674), Ross Matthew (), Marko Simic (101072986), Michael Slokar (), Mahmoud Al Sous (101071213)
 -----------------------------------------------------------------------------------------------------------------
 Files:
 
@@ -21,6 +21,9 @@ Files:
 + Test.java
 	->Creates threads for floor and elevator and starts them
 	->Creates instance of scheduler
+	
++ JUnit_Test.java
+	->Tests the methods of the classes with different inputs
 -----------------------------------------------------------------------------------------------------------------
 Instruction Set-up:
 
@@ -32,8 +35,9 @@ Breakdown of Responsibilities:
 UML class diagram: Archit Bhatia
 README.txt: Archit Bhatia
 UML sequence diagram: Michael Slokar
-RequestInfo: Ross Mattew
-ElevatorSubsystem.java: Ross Mattew
+RequestInfo.java: Ross Matthew
+ElevatorSubsystem.java: Ross Matthew
 Schedular.java: Marko Simic
 Test.java: Marko Simic
-FloorSubsystem: Mahmoud Al Sous
+FloorSubsystem.java: Mahmoud Al Sous
+JUnit_Test.java: Ross Matthew, Mahmoud Al Sous
