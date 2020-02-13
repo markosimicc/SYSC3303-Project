@@ -51,7 +51,7 @@ class JUnit_Test {
 	public void Test5() {
 		RequestInfo temp = new RequestInfo("Up", 3, num, time.now());
 		sch.sendInfo(temp);
-		RequestInfo temp2 = sch.receiveInfo(true);
+		RequestInfo temp2 = sch.recieveInfo(true);
 		assertEquals(null, sch.str, "NICE!");
 		assertNotEquals(temp, sch.str);
 		assertEquals(temp, temp2, "NICE!");	
