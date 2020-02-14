@@ -24,11 +24,12 @@ public class ElevatorSubsystem implements Runnable{
 	 * and sends the information back using an instance of scheduler
 	 */
 	public void run() {
-		info = scheduler.recieveInfo(false);
-		System.out.println("Elevator Recieved: "+  info.time + " " + info.floor + " " + info.direction + " " + info.elevator);
-		System.out.println("Elevator " + this.elevatorNum + " is ready to move.");
-		scheduler.sendInfo(info);
-		
+		while(true) {
+			info = scheduler.recieveInfo(false);
+			System.out.println("Elevator Recieved: "+  info.time + " " + info.floor + " " + info.direction + " " + info.elevator);
+			System.out.println("Elevator " + this.elevatorNum + " is ready to move.");
+			scheduler.sendInfo(info);
+		}
 		
 	}
 

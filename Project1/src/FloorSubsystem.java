@@ -5,11 +5,13 @@
  *
  */
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.*;
 
 public class FloorSubsystem implements Runnable {
 	public String[] tokens;
+	public ArrayList <RequestInfo> requests = new ArrayList<>(); 
 	private Scheduler scheduler;
 	private String direction;
 	private int elevator;
@@ -29,26 +31,27 @@ public class FloorSubsystem implements Runnable {
 	 * The scanner splits the line of input using spaces as separators and puts each of the inputs separated into a string array
 	 * @return type: RequestInfo
 	 */
-	public RequestInfo readInput() {
+	public ArrayList<RequestInfo> readInput() {
 	File textFile = new File("InputFile.txt");
 	
 		Scanner scanner;
 		try {
 			scanner = new Scanner(textFile);
 			
-			while(scanner.hasNext()) {
+			while(scanner.hasNextLine()) {
 				tokens = scanner.nextLine().split(" ");
+				
+				time = LocalTime.parse(tokens[0]);
+				floor = Integer.parseInt(tokens[1]);
+				direction = tokens[2];
+				elevator = Integer.parseInt(tokens[3]);
+			
+				RequestInfo input = new RequestInfo(direction, floor, elevator, time);
+				requests.add(input);
 			}
-		time = LocalTime.parse(tokens[0]);
-		floor = Integer.parseInt(tokens[1]);
-		direction = tokens[2];
-		elevator = Integer.parseInt(tokens[3]);
-		
-		RequestInfo input = new RequestInfo(direction, floor, elevator, time);
-		scanner.close();
-		return input;
+			scanner.close();
+			return requests;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -60,13 +63,16 @@ public class FloorSubsystem implements Runnable {
 	 */
 	@Override
 	public void run() {
-		RequestInfo input;
+		ArrayList <RequestInfo> input;
 		input = readInput();
-		System.out.println("Floor requested at: " + " " + input.time + " " + input.floor + " " +input.direction + " " + input.elevator);
-		scheduler.sendInfo(input);
+		for(RequestInfo i: input) {
+			System.out.println("Floor requested at: " + " " + i.time + " " + i.floor + " " +i.direction + " " + i.elevator);
+			scheduler.sendInfo(i);
 
-		RequestInfo response = scheduler.recieveInfo(true);
-		System.out.println("Elevator has arrived at floor : " + response.time + " "+ response.floor  + " "+response.direction + " "+ response.elevator);
+			RequestInfo response = scheduler.recieveInfo(true);
+			System.out.println("Elevator has arrived at floor : " + response.time + " "+ response.floor  + " "+response.direction + " "+ response.elevator + "\n");
+		}
+		
 	}
 }
 
