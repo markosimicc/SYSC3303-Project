@@ -9,7 +9,6 @@ import java.util.Scanner;
 import java.net.*;
 
 public class FloorSubsystem implements Runnable {
-	private Scheduler scheduler;
 	private byte[] buf;
 	private String line;
 	private int count;
@@ -20,8 +19,7 @@ public class FloorSubsystem implements Runnable {
 	 * Constructor for FloorSubsystem
 	 * @param scheduler
 	 */
-	public FloorSubsystem(Scheduler scheduler) {
-		this.scheduler = scheduler;
+	public FloorSubsystem() {
 		try {
 	    	  //Constructs a datagram socket used to send and receive from any port	
 	          sendReceiveSocket = new DatagramSocket();
@@ -44,6 +42,17 @@ public class FloorSubsystem implements Runnable {
 			
 			while(scanner.hasNextLine()) {
 				count++;
+			}
+			
+			try {
+				//Constructs the sendpacket with the byte array created
+				sendPacket = new DatagramPacket(Integer.toString(count).getBytes(), Integer.toString(count).getBytes().length, InetAddress.getLocalHost(), 23);
+				sendReceiveSocket.send(sendPacket);
+	        } catch (UnknownHostException e) {
+	        	e.printStackTrace();
+	            System.exit(1);
+	        } catch (IOException e) {
+				e.printStackTrace();
 			}
 			
 			while(scanner.hasNextLine()) {
@@ -89,7 +98,6 @@ public class FloorSubsystem implements Runnable {
 	 */
 	@Override
 	public void run() {
-		scheduler.sendInfo(count);
 		readInput();
 	}
 }
