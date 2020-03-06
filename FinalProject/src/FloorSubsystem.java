@@ -5,18 +5,16 @@
  *
  */
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.time.*;
+import java.net.*;
 
 public class FloorSubsystem implements Runnable {
-	public String[] tokens;
-	public ArrayList <RequestInfo> requests = new ArrayList<>(); 
 	private Scheduler scheduler;
-	private String direction;
-	private int elevator;
-	private int floor;
-	private LocalTime time;
+	private byte[] buf;
+	private String line;
+	private int count;
+	DatagramSocket sendReceiveSocket;
+	DatagramPacket sendPacket, receivePacket;
 	
 	/**
 	 * Constructor for FloorSubsystem
@@ -24,6 +22,13 @@ public class FloorSubsystem implements Runnable {
 	 */
 	public FloorSubsystem(Scheduler scheduler) {
 		this.scheduler = scheduler;
+		try {
+	    	  //Constructs a datagram socket used to send and receive from any port	
+	          sendReceiveSocket = new DatagramSocket();
+	      } catch (SocketException se) {   
+	         se.printStackTrace();
+	         System.exit(1);
+	      }
 	}
 	
 	/**
@@ -31,29 +36,50 @@ public class FloorSubsystem implements Runnable {
 	 * The scanner splits the line of input using spaces as separators and puts each of the inputs separated into a string array
 	 * @return type: RequestInfo
 	 */
-	public ArrayList<RequestInfo> readInput() {
-	File textFile = new File("InputFile.txt");
-	
+	public void readInput() {
+		File textFile = new File("InputFile.txt");
 		Scanner scanner;
 		try {
 			scanner = new Scanner(textFile);
 			
 			while(scanner.hasNextLine()) {
-				tokens = scanner.nextLine().split(" ");
-				
-				time = LocalTime.parse(tokens[0]);
-				floor = Integer.parseInt(tokens[1]);
-				direction = tokens[2];
-				elevator = Integer.parseInt(tokens[3]);
+				count++;
+			}
 			
-				RequestInfo input = new RequestInfo(direction, floor, elevator, time);
-				requests.add(input);
+			while(scanner.hasNextLine()) {
+				line = scanner.nextLine();
+				System.out.println("Floor requested at: " + line);
+				
+				try {
+					//Constructs the sendpacket with the byte array created
+					sendPacket = new DatagramPacket(line.getBytes(), line.getBytes().length, InetAddress.getLocalHost(), 23);
+					sendReceiveSocket.send(sendPacket);
+		        } catch (UnknownHostException e) {
+		        	e.printStackTrace();
+		            System.exit(1);
+		        } catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				receivePacket = new DatagramPacket(buf, buf.length);
+				
+				try {
+			     	  //Waits to receive the packet
+			     	  System.out.println("Waiting...");
+			           sendReceiveSocket.receive(receivePacket);
+			       } catch(IOException e) {
+			          e.printStackTrace();
+			          System.exit(1);
+			       }
+				
+				String received = new String(receivePacket.getData(), 0, receivePacket.getLength());
+				System.out.println("Elevator has arrived at floor : " + received + "\n");
 			}
 			scanner.close();
-			return requests;
+			//return requests;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			return null;
+			return;
 		}
 	}
 
@@ -63,16 +89,8 @@ public class FloorSubsystem implements Runnable {
 	 */
 	@Override
 	public void run() {
-		ArrayList <RequestInfo> input;
-		input = readInput();
-		for(RequestInfo i: input) {
-			System.out.println("Floor requested at: " + " " + i.time + " " + i.floor + " " +i.direction + " " + i.elevator);
-			scheduler.sendInfo(i);
-
-			RequestInfo response = scheduler.recieveInfo(true);
-			System.out.println("Elevator has arrived at floor : " + response.time + " "+ response.floor  + " "+response.direction + " "+ response.elevator + "\n");
-		}
-		
+		scheduler.sendInfo(count);
+		readInput();
 	}
 }
 
