@@ -13,7 +13,7 @@ public class Test {
 		
 		Scheduler sch = new Scheduler();
 		
-		floor = new Thread(new FloorSubsystem(sch), "Floor");
+		floor = new Thread(new FloorSubsystem(), "Floor");
 		elevator = new Thread(new ElevatorSubsystem(1, sch),"Elevator1");
 		floor.start();
 		elevator.start();

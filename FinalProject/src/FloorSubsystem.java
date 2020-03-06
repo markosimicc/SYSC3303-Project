@@ -5,13 +5,13 @@
  *
  */
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.net.*;
 
 public class FloorSubsystem implements Runnable {
 	private byte[] buf;
 	private String line;
-	private int count;
 	DatagramSocket sendReceiveSocket;
 	DatagramPacket sendPacket, receivePacket;
 	
@@ -41,35 +41,23 @@ public class FloorSubsystem implements Runnable {
 			scanner = new Scanner(textFile);
 			
 			while(scanner.hasNextLine()) {
-				count++;
-			}
-			
-			try {
-				//Constructs the sendpacket with the byte array created
-				sendPacket = new DatagramPacket(Integer.toString(count).getBytes(), Integer.toString(count).getBytes().length, InetAddress.getLocalHost(), 23);
-				sendReceiveSocket.send(sendPacket);
-	        } catch (UnknownHostException e) {
-	        	e.printStackTrace();
-	            System.exit(1);
-	        } catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			while(scanner.hasNextLine()) {
 				line = scanner.nextLine();
 				System.out.println("Floor requested at: " + line);
-				
+				byte[] d = line.getBytes();
+				System.out.println(Arrays.toString(d));
 				try {
 					//Constructs the sendpacket with the byte array created
-					sendPacket = new DatagramPacket(line.getBytes(), line.getBytes().length, InetAddress.getLocalHost(), 23);
+					sendPacket = new DatagramPacket(d, d.length, InetAddress.getLocalHost(), 23);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+				try {
 					sendReceiveSocket.send(sendPacket);
-		        } catch (UnknownHostException e) {
-		        	e.printStackTrace();
-		            System.exit(1);
 		        } catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+				buf = new byte[100];
 				receivePacket = new DatagramPacket(buf, buf.length);
 				
 				try {
@@ -99,6 +87,11 @@ public class FloorSubsystem implements Runnable {
 	@Override
 	public void run() {
 		readInput();
+	}
+	public static void main(String[] args) throws Exception {
+		Thread floor;
+		floor = new Thread(new FloorSubsystem(), "Floor");
+		floor.start();
 	}
 }
 
