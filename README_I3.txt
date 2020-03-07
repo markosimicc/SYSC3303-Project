@@ -44,10 +44,11 @@ Files:
 -----------------------------------------------------------------------------------------------------------------
 Instruction Set-up:
 
-1) Run 
-2) Check console for logs
-3) Run JUnit.java
-4) Check console for test logs
+1) Run SchTest
+2) Run ElevatorSubsystem
+3) Run FloorSubsystem
+4) Check console for logs
+
 -----------------------------------------------------------------------------------------------------------------
 Reflection:
 For the Previous Iteration, we had a single scheduler that was sending requests between
@@ -60,16 +61,14 @@ ElevatorSubsystem.
 -----------------------------------------------------------------------------------------------------------------
 Breakdown of Responsibilities:
 
-UML class diagram: Ross Matthew, Marko Simic
+UML class diagram: Michael Slokar
 Elevator Subsystem: Archit Bhatia, Ross Matthew
 README.txt: Michael Slokar
 Buffer.java: Marko Simic
 RequestInfo.java: Ross Matthew
-ElevatorSubsystem.java: Archit Bhatia
 FloorSubsystem.java: Mahmoud Al Sous
 Schedular.java: Mahmoud Al Sous, Marko Simic
 SchedularElev.java: Marko Simic, Ross Matthew
 SchedularFloor.java: Marko Simic
 SchTest.java: Marko Simic
-JUnit_Test.java: Marko Simic
 
