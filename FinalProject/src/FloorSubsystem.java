@@ -47,6 +47,7 @@ public class FloorSubsystem implements Runnable {
 				System.out.println(Arrays.toString(d));
 				try {
 					//Constructs the sendpacket with the byte array created
+					//InetAddress addy = InetAddress.getByName("134.117.59.115");
 					sendPacket = new DatagramPacket(d, d.length, InetAddress.getLocalHost(), 23);
 				} catch (UnknownHostException e) {
 					e.printStackTrace();

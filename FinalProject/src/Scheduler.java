@@ -64,8 +64,8 @@ public class Scheduler implements Runnable {
 			curr.set(2,num3);
 			curr.set(3,num4);
 			
-			System.out.println("Handling Request : " + " " + info.floor +  " " + info.direction + info.elevator);
-			
+			System.out.println("Handling Request : " + " " + info.floor +  " " + info.direction + " " +  info.elevator + "\n");
+			chosen = false;
 			int a = 500;
 			for (int i =0; i<curr.size(); i++) {
 				int distance = info.floor - curr.get(i);
@@ -86,6 +86,8 @@ public class Scheduler implements Runnable {
 				else if(!chosen && Math.abs(distance) < Math.abs(a)) {
 					a = distance;
 					currentChosenElevator = i;
+					
+					
 				}
 			}
 			

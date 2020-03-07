@@ -85,14 +85,30 @@ public class ElevatorSubsystem implements Runnable {
 			
 			System.out.println(Thread.currentThread().getName() + ":");
 			System.out.println("Received a request from floor " + requestFloor + " to go to floor " + lastFloor + ".");
+			stat = stat.next(ElevatorTransistions.Door_closing);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat);
 			System.out.println("Going from floor " + currFloor + " to floor " + requestFloor + ".");
+			stat = stat.next(ElevatorTransistions.Start_Motor);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat);
 			currFloor = requestFloor;
+			stat = stat.next(ElevatorTransistions.Reach_Floor);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat);
 			floors.add(lastFloor);
+			stat = stat.next(ElevatorTransistions.Door_Opening);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat);
 			System.out.println("Picked up passenger at floor " + currFloor + ".");
+			stat = stat.next(ElevatorTransistions.Door_closing);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat);
 			System.out.println("Going from floor " + currFloor + " to floor " + floors.get(0) + ".");
+			stat = stat.next(ElevatorTransistions.Start_Motor);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat);
 			currFloor = floors.get(0);
+			stat = stat.next(ElevatorTransistions.Reach_Floor);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat);
 			floors.remove(0);
-			System.out.println("Arrived at floor " + currFloor + ".\n");
+			System.out.println("Arrived at floor " + currFloor + ".");
+			stat = stat.next(ElevatorTransistions.Door_Opening);
+			System.out.println(Thread.currentThread().getName() + " is in state: " + stat + "\n");
 			
 		}
 	}
