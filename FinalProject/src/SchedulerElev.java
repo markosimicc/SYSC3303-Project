@@ -26,7 +26,6 @@ public class SchedulerElev implements Runnable{
 			receivePacket = new DatagramPacket(data,data.length);
 			try {
 				//Waits to receive the packet
-				System.out.println("Waiting...");
 				ElevSocket.receive(receivePacket);
 			} catch(IOException e) {
 				e.printStackTrace();
@@ -36,7 +35,7 @@ public class SchedulerElev implements Runnable{
 			int floornum = Integer.parseInt(received);
 			floors.put(elevNumber, floornum);
 			
-			System.out.println(floornum);
+			System.out.print(Thread.currentThread().getName() + " received floor number " + floornum + "\n");
 		}
 	}
 	

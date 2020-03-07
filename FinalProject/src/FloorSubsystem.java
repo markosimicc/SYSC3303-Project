@@ -62,7 +62,6 @@ public class FloorSubsystem implements Runnable {
 				
 				try {
 			     	  //Waits to receive the packet
-			     	  System.out.println("Waiting...");
 			           sendReceiveSocket.receive(receivePacket);
 			       } catch(IOException e) {
 			          e.printStackTrace();

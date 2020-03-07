@@ -21,14 +21,17 @@ public class Scheduler implements Runnable {
 	public State st = State.WAITING;
 	public RequestInfo str;
 	int currentChosenElevator;
+	
 	DatagramSocket mainSocket;
 	DatagramPacket sendPacket, receivePacket;
 	ElevetorFloors floors;
 	Buffer buf;
+	
 	int num1;
 	int num2;
 	int num3;
 	int num4;
+	
 	public Scheduler(Buffer b,ElevetorFloors floors) {
 		curr.add(0,num1);
 		curr.add(1, num2);
@@ -55,15 +58,17 @@ public class Scheduler implements Runnable {
 			num2 = floors.get(1);
 			num3 = floors.get(2);
 			num4 = floors.get(3);
+			
 			curr.set(0,num1);
 			curr.set(1, num2);
 			curr.set(2,num3);
 			curr.set(3,num4);
-			System.out.println("Handling Request : " +  info.floor + info.direction + info.elevator);
+			
+			System.out.println("Handling Request : " + " " + info.floor +  " " + info.direction + info.elevator);
+			
 			int a = 500;
 			for (int i =0; i<curr.size(); i++) {
 				int distance = info.floor - curr.get(i);
-				System.out.println("Elev " + i + " is on " + curr.get(i));
 				if(info.direction.equals("Up") && (curr.get(i) <= info.floor) ) {
 					if( Math.abs(distance) < Math.abs(a)) {
 						a = distance;
@@ -91,7 +96,6 @@ public class Scheduler implements Runnable {
 	public void sendInfo(int elev) {
 		String s = info.floor + " " + info.direction + " " + info.elevator;
 		byte[] data = s.getBytes();
-		System.out.println(elev);
 		try {
 			//Constructs the sendpacket with the byte array created
 			sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(),2000+elev);
@@ -106,70 +110,8 @@ public class Scheduler implements Runnable {
 		}
 	}
 	/**
-	 * Takes in the information passed as an argument and notifies the system
-	 * @param info
-	 */
-/*	public synchronized void sendInfo(RequestInfo info) {
-		while (!(str == null)) {
-			try {
-				wait();
-			}
-			catch (InterruptedException e) {
-				return;
-			}
-		}
-
-		if (Thread.currentThread().getName().contains("Floor")) {
-
-			reply = false;
-		}
-		else {
-			reply = true;
-		}
-		str = info;
-		System.out.println("Scheduler recieved message  from : " + Thread.currentThread().getName() + " " + info.time
-				+ " " + info.floor + " " + info.direction + " " + info.elevator);
-		st = st.next(SchedulerTransistions.RECEIVE);
-		System.out.println("Scheduler is : " + getState(st));
-		notifyAll();
-	}
-
-	/**
-	 * Checks if it passing infomation or not, then returns the information to pass
-	 * it to the other subsystems
-	 * @param isReply
-	 * @return
-	 */
-
-	/*public synchronized RequestInfo recieveInfo(boolean isReply) {
-		while (str == null || !(isReply == reply)) {
-			try {
-				wait();
-			}
-			catch (InterruptedException e) {
-				return null;
-			}
-		}
-		RequestInfo data = str;
-		str = null;
-		notifyAll();
-		transition = SchedulerTransistions.SEND;
-		st = st.next(transition);
-		System.out.println("Scheduler is : " + getState(st));
-		return data;
-	}*/
-	/**
-	 * 
-	 * 
-	 * 
 	 * @author Michael Slokar
-	 *
-	 * 
-	 * 
-	 *         sets up the states of the scheduler and switches between states
-	 * 
-	 * 
-	 * 
+	 * Sets up the states of the scheduler and switches between states
 	 */
 
 	public static enum State {

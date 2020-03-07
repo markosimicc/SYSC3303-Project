@@ -3,7 +3,7 @@ public class SchTest {
 	public static void main(String[] args) throws Exception {
 		Thread Schfloor;
 		Buffer shared = new Buffer();
-		Schfloor = new Thread(new SchedulerFloor(shared), "Floor");
+		Schfloor = new Thread(new SchedulerFloor(shared), "Floor Scheduler");
 		Thread Sch;
 		
 

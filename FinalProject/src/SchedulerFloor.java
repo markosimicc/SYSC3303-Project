@@ -15,8 +15,10 @@ public class SchedulerFloor implements Runnable {
 	private LocalTime time;
 	Buffer buf;
 	public RequestInfo info;
+	
 	public SchedulerFloor(Buffer b) {
 		buf = b;
+		
 		try {
 	    	  //Constructs a datagram socket used to send and receive from any port	
 	          floorSocket = new DatagramSocket(23);
@@ -32,7 +34,6 @@ public class SchedulerFloor implements Runnable {
 			receivePacket = new DatagramPacket(data,data.length);
 			try {
 				//Waits to receive the packet
-				System.out.println("Waiting...");
 				floorSocket.receive(receivePacket);
 			} catch(IOException e) {
 				e.printStackTrace();
@@ -40,7 +41,7 @@ public class SchedulerFloor implements Runnable {
 			}
 			int port = receivePacket.getPort();
 			String received = new String(receivePacket.getData(), 0, receivePacket.getLength());
-			System.out.println("Got message : " + received + "\n");
+			System.out.println(Thread.currentThread().getName() + " got message : " + received + "\n");
 			String[] tokens = received.split(" ");
 			
 			time = LocalTime.parse(tokens[0]);
@@ -49,7 +50,7 @@ public class SchedulerFloor implements Runnable {
 			elevator = Integer.parseInt(tokens[3]);
 			info = new RequestInfo(direction,floor,elevator,time);
 			buf.put(info);
-			String s = "rECEIED";
+			String s = "Received";
 			byte[] msg = s.getBytes();
 			try {
 				//Constructs the sendpacket with the byte array created
