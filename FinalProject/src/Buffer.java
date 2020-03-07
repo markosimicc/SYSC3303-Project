@@ -4,7 +4,10 @@ public class Buffer {
 	public Queue<RequestInfo> requests = new LinkedList<>();
 	public void put(RequestInfo req)
     {
-        requests.add(req);
+		synchronized(requests) {
+			requests.add(req);
+			notifyAll();
+		}
         //notifyAll();
     }
 	public RequestInfo get() {

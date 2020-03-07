@@ -7,7 +7,11 @@ public class SchedulerElev implements Runnable{
 	public int ElevNum;
 	DatagramSocket ElevSocket;
 	DatagramPacket sendPacket, receivePacket;
-	public SchedulerElev(int port) {
+	private int elevNumber;
+	ElevetorFloors floors;
+	public SchedulerElev(int port,int elevNumber,ElevetorFloors floors) {
+		this.elevNumber = elevNumber;
+		this.floors = floors;
 		try {
 	    	  //Constructs a datagram socket used to send and receive from any port	
 	          ElevSocket = new DatagramSocket(port);
@@ -28,17 +32,20 @@ public class SchedulerElev implements Runnable{
 				e.printStackTrace();
 				System.exit(1);
 			}
-			ElevNum = data[0];
+			String received = receivePacket.getData().toString();
+			int floornum = Integer.parseInt(received);
+			floors.put(elevNumber, floornum);
+			
 			System.out.println(ElevNum);
 		}
 	}
 	public static void main(String[] args) throws Exception {
 		Thread SchElev,SchElev1,SchElev2,SchElev3;
-		Buffer shared = new Buffer();
-		SchElev = new Thread(new SchedulerElev(69), "Floor");
-		SchElev1 = new Thread(new SchedulerElev(70), "Floor");
-		SchElev2 = new Thread(new SchedulerElev(71), "Floor");
-		SchElev3 = new Thread(new SchedulerElev(72), "Floor");
+		ElevetorFloors shared = new ElevetorFloors();
+		SchElev = new Thread(new SchedulerElev(69,0,shared), "Elev1");
+		SchElev1 = new Thread(new SchedulerElev(70,1,shared), "Elev2");
+		SchElev2 = new Thread(new SchedulerElev(71,1,shared), "Elev3");
+		SchElev3 = new Thread(new SchedulerElev(72,2,shared), "Elev4");
 		SchElev.start();
 		SchElev1.start();
 		SchElev2.start();
