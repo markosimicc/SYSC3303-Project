@@ -2,26 +2,23 @@ import java.util.*;
 
 public class Buffer {
 	public Queue<RequestInfo> requests = new LinkedList<>();
-	public void put(RequestInfo req)
+	public synchronized void put(RequestInfo req)
     {
-		synchronized(requests) {
-			requests.add(req);
-			notifyAll();
-		}
-        //notifyAll();
+		requests.add(req);
+		//notifyAll();
+        notifyAll();
     }
-	public RequestInfo get() {
-		synchronized(requests) {
-			try {
-				 while (requests.isEmpty()) {
-					 requests.wait();
-				 }
-			}catch (InterruptedException e) {
-				 return null;
-				 }
-			}
-			RequestInfo r = requests.remove();
-			notifyAll();
-			return r;
-		}
+	public synchronized RequestInfo get() {
+		try {
+			 while (requests.isEmpty()) {
+				 wait();
+			 }
+		}catch (InterruptedException e) {
+			 return null;
+			 }
+		RequestInfo r = requests.remove();
+		notifyAll();
+		return r;
+	}
 }
+

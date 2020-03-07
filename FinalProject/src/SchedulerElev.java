@@ -22,7 +22,7 @@ public class SchedulerElev implements Runnable{
 	}
 	public void run() {
 		while (true) {
-			byte[] data = new byte[2];
+			byte[] data = new byte[10];
 			receivePacket = new DatagramPacket(data,data.length);
 			try {
 				//Waits to receive the packet
@@ -32,23 +32,12 @@ public class SchedulerElev implements Runnable{
 				e.printStackTrace();
 				System.exit(1);
 			}
-			String received = receivePacket.getData().toString();
+			String received = new String( receivePacket.getData(), 0, receivePacket.getLength());
 			int floornum = Integer.parseInt(received);
 			floors.put(elevNumber, floornum);
 			
-			System.out.println(ElevNum);
+			System.out.println(floornum);
 		}
 	}
-	public static void main(String[] args) throws Exception {
-		Thread SchElev,SchElev1,SchElev2,SchElev3;
-		ElevetorFloors shared = new ElevetorFloors();
-		SchElev = new Thread(new SchedulerElev(69,0,shared), "Elev1");
-		SchElev1 = new Thread(new SchedulerElev(70,1,shared), "Elev2");
-		SchElev2 = new Thread(new SchedulerElev(71,1,shared), "Elev3");
-		SchElev3 = new Thread(new SchedulerElev(72,2,shared), "Elev4");
-		SchElev.start();
-		SchElev1.start();
-		SchElev2.start();
-		SchElev3.start();
-	}
+	
 }

@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -13,7 +14,8 @@ import java.util.ArrayList;
 
 public class Scheduler implements Runnable {
 	public ArrayList<Integer> curr = new ArrayList<>();
-	public boolean reply = true;
+	//public ArrayList<>
+	public boolean chosen = false;
 	private RequestInfo info;
 	public SchedulerTransistions transition;
 	public State st = State.WAITING;
@@ -28,47 +30,71 @@ public class Scheduler implements Runnable {
 	int num3;
 	int num4;
 	public Scheduler(Buffer b,ElevetorFloors floors) {
+		curr.add(0,num1);
+		curr.add(1, num2);
+		curr.add(2,num3);
+		curr.add(3,num4);
+		try {
+			mainSocket = new DatagramSocket();
+		} catch (SocketException se) {}
 		this.floors = floors;
 		buf =b;
 		System.out.println("Scheduler Initial State : " + getState(st));
+		currentChosenElevator = 0;
 	}
 
 	@Override
 
 	public void run() {
 		while(true) {
+			try {
+				Thread.sleep(100);
+			} catch(InterruptedException e) {}
 			info = buf.get();
 			num1 = floors.get(0);
-			
 			num2 = floors.get(1);
 			num3 = floors.get(2);
 			num4 = floors.get(3);
-			curr.add(0,num1);
-			curr.add(1, num2);
-			curr.add(2,num3);
-			curr.add(3,num4);
-			System.out.println("Handling Request : " +  info.elevator + info.direction + info.floor);
+			curr.set(0,num1);
+			curr.set(1, num2);
+			curr.set(2,num3);
+			curr.set(3,num4);
+			System.out.println("Handling Request : " +  info.floor + info.direction + info.elevator);
 			int a = 500;
-			for (int i:curr) {
-				int distance = info.elevator - curr.get(i);
-				if( Math.abs(distance) < Math.abs(a)) {
+			for (int i =0; i<curr.size(); i++) {
+				int distance = info.floor - curr.get(i);
+				System.out.println("Elev " + i + " is on " + curr.get(i));
+				if(info.direction.equals("Up") && (curr.get(i) <= info.floor) ) {
+					if( Math.abs(distance) < Math.abs(a)) {
+						a = distance;
+						currentChosenElevator = i;
+						chosen = true;
+					}
+				}
+				else if(info.direction.equals("Down") && (curr.get(i) >= info.floor) ) {
+					if( Math.abs(distance) < Math.abs(a)) {
+						a = distance;
+						currentChosenElevator = i;
+						chosen = true;
+					}
+				}
+				else if(!chosen && Math.abs(distance) < Math.abs(a)) {
 					a = distance;
 					currentChosenElevator = i;
 				}
-				if(info.direction.equals("Up")) {
-					
-				}
 			}
+			
 			sendInfo(currentChosenElevator);	
 			
 		}
 	}
 	public void sendInfo(int elev) {
-		String s = info.elevator + " " + info.direction + " " + info.floor;
+		String s = info.floor + " " + info.direction + " " + info.elevator;
 		byte[] data = s.getBytes();
+		System.out.println(elev);
 		try {
 			//Constructs the sendpacket with the byte array created
-			sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(),69+elev );
+			sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(),2000+elev);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			System.exit(1);

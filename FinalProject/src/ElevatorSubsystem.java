@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 /**
  * 
- * @author Archit Bhatia(states)
+ * @author Ross Matthew
  * a list of the transitions of the Schedulers states
  */
 public class ElevatorSubsystem implements Runnable {
 	private int elevatorNum; // Declaration of class fields
-	private int currFloor = 01;
+	private int currFloor;
 	private ArrayList<Integer> floors = new ArrayList<>();
 	
 	
@@ -42,14 +42,15 @@ public class ElevatorSubsystem implements Runnable {
 	 */
 	
 	
-	public ElevatorSubsystem(int elevatorNum, int portNum) {
+	public ElevatorSubsystem(int elevatorNum, int portNum, int receivePort) {
 		this.elevatorNum = elevatorNum;  //Set elevator number
 		this.port = portNum;  //Set elevator port number
+		this.currFloor = 1;
 		
 		//Create sockets
 		try {
 			sendSocket = new DatagramSocket();
-			receiveSocket = new DatagramSocket(85);
+			receiveSocket = new DatagramSocket(receivePort);
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
@@ -60,8 +61,9 @@ public class ElevatorSubsystem implements Runnable {
 	public void receiveAndEcho() {
 		
 		while (true) {  //If there is another task to complete
-			byte data[] = new byte[2];
-			data[0] = (byte) currFloor;
+			String temp = Integer.toString(currFloor);
+			byte[] data = temp.getBytes();
+			System.out.println(currFloor);
 			//Create packet with current floor to send to scheduler
 			try {
 				sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), port);
@@ -75,7 +77,7 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 
-			byte dataR[] = new byte[7];
+			byte dataR[] = new byte[10];
 			receivePacket = new DatagramPacket(dataR, dataR.length);
 			//Receive packet from scheduler containing the next floor to go to
 			try {
@@ -83,46 +85,24 @@ public class ElevatorSubsystem implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//Set the current floor value to the one sent by the scheduler
-			byte startFloor[] = new byte[2];
-			byte endFloor[] = new byte[2];
-			System.arraycopy(receivePacket.getData(), 0, startFloor, 0, startFloor.length);
-			System.arraycopy(receivePacket.getData(), 5, endFloor, 0, endFloor.length);
-			int nextFloor = 0;
-			for (int i=0; i<2; i++) {
-				nextFloor = (nextFloor << 8 ) - Byte.MIN_VALUE + (int) startFloor[i];
-			}
-			if(nextFloor != 0) {
-				currFloor = nextFloor;
-			}
-			int addFloor = 0;
-			for (int i=0; i<2; i++) {
-			      addFloor = ( addFloor << 8 ) - Byte.MIN_VALUE + (int) endFloor[i];
-			}
-			if(!floors.contains(addFloor) && (addFloor != 0)){
-				floors.add(addFloor);
-			}
+			//Set the current floor value to the one sent by the scheduler			
+			String received = new String(receivePacket.getData(), 0, receivePacket.getLength());
+			String[] elem = received.split(" ");
+			int requestFloor = Integer.parseInt(elem[0]);
+			int lastFloor = Integer.parseInt(elem[2]);
 			
-			//Create packet to send to scheduler to see if there are more tasks
-			String checkStr = "?";
-			byte[] checkBytes = checkStr.getBytes();
-			sendPacket = new DatagramPacket(checkBytes, checkBytes.length, receivePacket.getAddress(), port);
-			//Send task request packet
-			try {
-				sendSocket.send(sendPacket);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			//Create packet to receive info saying if there is another task to do
-			receivePacket = new DatagramPacket(dataR, dataR.length);
-			try {
-				receiveSocket.receive(receivePacket);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			byte nextTask[] = receivePacket.getData();
-			hasTask = nextTask[0];  //Update if there is another task to do or not (1 or 0)
+			System.out.println("Received a request from floor " + requestFloor + " to go to floor " + lastFloor + ".");
+			System.out.println("Going from floor " + currFloor + " to floor " + requestFloor + ".");
+			currFloor = requestFloor;
+			floors.add(lastFloor);
+			System.out.println("Picked up passenger at floor " + currFloor + ".");
 			
+			System.out.println("Going from floor " + currFloor + " to floor " + floors.get(0) + ".");
+			currFloor = floors.get(0);
+			floors.remove(0);
+			System.out.println("Arrived at floor " + currFloor + ".");
+			
+			/*
 			if(!(hasTask == 1)  && (!floors.isEmpty())) {
 				int goTo = floors.get(0);
 				for(int i=0; i<floors.size()-1; i++) {
@@ -132,6 +112,9 @@ public class ElevatorSubsystem implements Runnable {
 				}
 				currFloor = goTo;
 			}
+			*/
+			
+			
 		}
 	}
 
@@ -197,10 +180,10 @@ public class ElevatorSubsystem implements Runnable {
 	public static void main(String[] args) throws Exception {
 		Thread elevator1, elevator2, elevator3, elevator4;
 
-		elevator1 = new Thread(new ElevatorSubsystem(1, 69),"Elevator1");
-		elevator2 = new Thread(new ElevatorSubsystem(2, 70),"Elevator2");
-		elevator3 = new Thread(new ElevatorSubsystem(3, 71),"Elevator3");
-		elevator4 = new Thread(new ElevatorSubsystem(4, 72),"Elevator4");
+		elevator1 = new Thread(new ElevatorSubsystem(1, 69, 2000),"Elevator1");
+		elevator2 = new Thread(new ElevatorSubsystem(2, 70, 2001),"Elevator2");
+		elevator3 = new Thread(new ElevatorSubsystem(3, 71, 2002),"Elevator3");
+		elevator4 = new Thread(new ElevatorSubsystem(4, 72, 2003),"Elevator4");
 
 		elevator1.start();
 		elevator2.start();

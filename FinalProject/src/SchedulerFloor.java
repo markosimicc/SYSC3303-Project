@@ -65,11 +65,6 @@ public class SchedulerFloor implements Runnable {
 			}
 		}
 	}
-	public static void main(String[] args) throws Exception {
-		Thread Schfloor;
-		Buffer shared = new Buffer();
-		Schfloor = new Thread(new SchedulerFloor(shared), "Floor");
-		Schfloor.start();
-	}
+	
 
 }
